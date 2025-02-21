@@ -90,3 +90,13 @@ QStatusBar {
     background-color: #333; /* 状态栏背景颜色 */
     color: #fff; /* 状态栏文字颜色 */
 }
+
+/* 分组框样式 */
+/*QGroupBox{
+    border: 2px solid black; /* 边框为2像素宽的黑色实现 */
+    border-radius: 10px;
+    margin-top: 1ex;
+    background-color: #424242; /* 底色设置为 #424242 */
+    padding-top: 25px;
+}*/
+

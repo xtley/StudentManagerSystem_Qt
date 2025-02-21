@@ -2,11 +2,11 @@
 #define STUDENTINFOWIDGET_H
 
 #include <QWidget>
-
+#include <QByteArray>
 namespace Ui {
 class StudentInfoWidget;
 }
-
+class QGroupBox;
 class StudentInfoWidget : public QWidget
 {
     Q_OBJECT
@@ -15,7 +15,16 @@ public:
     explicit StudentInfoWidget(QWidget *parent = nullptr);
     ~StudentInfoWidget();
 
+private slots:
+    void on_btnAdd_clicked();
+
 private:
+    QGroupBox* createFormGroup();
+    QGroupBox* createPhotoGroup();
+    void handleDialogAccepted(QGroupBox* formGroup,QGroupBox* phottoGroup);
+    void refreshTable();
+
+    QByteArray photoData;
     Ui::StudentInfoWidget *ui;
 };
 

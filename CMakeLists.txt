@@ -8,7 +8,9 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+INCLUDE_DIRECTORIES(
+    ${PROJECT_SOURCE_DIR}
+)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
@@ -17,6 +19,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -26,6 +29,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         image/icon.qrc
         style.qrc
         databasemanager.h databasemanager.cpp
+        studentinfowidget.h studentinfowidget.cpp
+        studentinfowidget.ui
         studentinfowidget.h studentinfowidget.cpp studentinfowidget.ui
     )
 # Define target properties for Android with Qt 6 as:
