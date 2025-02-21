@@ -1,1 +1,10 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/">
+        <file>理财_financing.png</file>
+        <file>日程表_schedule.png</file>
+        <file>设置_setting-one.png</file>
+        <file>书籍_bookshelf.png</file>
+        <file>长城_great-wall.png</file>
+        <file>系统_system.png</file>
+    </qresource>
+</RCC>

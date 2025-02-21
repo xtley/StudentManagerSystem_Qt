@@ -1,0 +1,92 @@
+/* 主窗口样式 */
+QMainWindow {
+    background-color: #f5f5f5;
+    border: 1px solid #dcdcdc;
+}
+
+/* 侧边栏样式 */
+QWidget#widget {
+    background-color: #333;
+    border-right: 1px solid #555;
+}
+
+/* 侧边栏按钮样式 */
+QToolButton {
+    background-color: #444;
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+QToolButton:hover {
+    background-color: #555;
+}
+
+QToolButton:pressed {
+    background-color: #666;
+}
+
+QToolButton:checked {
+    background-color: #0078d4;
+}
+
+/* 按钮图标样式 */
+QToolButton::menu-indicator {
+    image: none;
+}
+
+/* StackedWidget 样式 */
+QStackedWidget {
+    background-color: #ffffff; /* 设置背景颜色 */
+    border: 1px solid #dcdcdc; /* 设置边框颜色 */
+    border-radius: 5px; /* 设置圆角 */
+}
+
+/* StackedWidget 的子页面样式 */
+QStackedWidget > QWidget {
+    background-color: #f9f9f9; /* 页面背景颜色，稍微浅于主窗口背景 */
+    padding: 10px; /* 页面内边距 */
+}
+
+/* StackedWidget 页面中的按钮样式 */
+QPushButton {
+    background-color: #f0f0f0; /* 按钮背景颜色 */
+    color: #333; /* 按钮文字颜色 */
+    border: 1px solid #ccc; /* 按钮边框颜色 */
+    font-size: 12px; /* 字体大小 */
+    padding: 5px; /* 按钮内边距 */
+    border-radius: 3px; /* 按钮圆角 */
+}
+
+QPushButton:hover {
+    background-color: #e0e0e0; /* 悬停时背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: #d0d0d0; /* 按下时背景颜色 */
+}
+
+/* 菜单栏样式 */
+QMenuBar {
+    background-color: #333; /* 菜单栏背景颜色 */
+    color: #fff; /* 菜单文字颜色 */
+}
+
+QMenuBar::item {
+    background-color: transparent; /* 菜单项背景颜色 */
+    padding: 3px 10px; /* 菜单项内边距 */
+}
+
+QMenuBar::item:selected {
+    background-color: #555; /* 选中菜单项背景颜色 */
+}
+
+/* 状态栏样式 */
+QStatusBar {
+    background-color: #333; /* 状态栏背景颜色 */
+    color: #fff; /* 状态栏文字颜色 */
+}
