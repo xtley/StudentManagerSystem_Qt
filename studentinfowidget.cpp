@@ -13,14 +13,16 @@
 #include <QBuffer>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QStringList>
 #include "tabledelegates.h"
+
 StudentInfoWidget::StudentInfoWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::StudentInfoWidget)
 {
     ui->setupUi(this);
     ui->tableWidget->verticalHeader()->setDefaultSectionSize(100);
-
+    ui->tableWidget->setAlternatingRowColors(true);
     // 性别列代理
     ComboBoxDelegate* genderDelegate = new ComboBoxDelegate(this);
     genderDelegate->setItems(QStringList()<<"男"<<"女");
@@ -34,6 +36,9 @@ StudentInfoWidget::StudentInfoWidget(QWidget *parent)
     ui->tableWidget->setItemDelegateForColumn(4,new DateEditDelegate(this));
     // 图片列代理
     ui->tableWidget->setItemDelegateForColumn(7,new ImageDelegate(this));
+
+    // 连接item修改信号
+    connect(ui->tableWidget,&QTableWidget::itemChanged,this,&StudentInfoWidget::handleItemChanged);
     refreshTable();
 }
 
@@ -71,6 +76,7 @@ void StudentInfoWidget::refreshTable()
             ui->tableWidget->setItem(row,col,item);
         }
     }
+    ui->tableWidget->blockSignals(false);
 }
 
 void StudentInfoWidget::on_btnAdd_clicked()
@@ -294,3 +300,50 @@ void StudentInfoWidget::on_btnDeleteLine_clicked()
     refreshTable();
 }
 
+void StudentInfoWidget::handleItemChanged(QTableWidgetItem *item)
+{
+    // qDebug() << "Item changed:" << item->text();
+    // 获取当前修改项信息
+    const int row = item->row();
+    const int col = item->column();
+    // 如果尝试修改id列，直接恢复原始值并提示用户
+    if (col==0) {
+        QMessageBox::warning(this,"警告","学号是主键，不能修改");
+        refreshTable();
+        return ;
+    }
+
+    const QString originalId = ui->tableWidget->item(row,0)->text(); // 原始学号
+    const QString columnName = QStringList{"id","name","gender","birthday",
+                                           "join_date","study_goal","progress","photo"}[col];
+
+    // 事务开始
+    QSqlDatabase::database().transaction();
+    try{
+        // 准备更新语句
+        QSqlQuery updateQuery;
+        updateQuery.prepare(QString("UPDATE studentInfo SET %1 = ? WHERE id = ?").arg(columnName));
+        // 绑定数据
+        if (columnName == "photo") { // 处理图片列
+            updateQuery.addBindValue(item->data(Qt::UserRole).toByteArray());
+        }
+        else {
+            updateQuery.addBindValue(item->text().trimmed());
+        }
+        updateQuery.addBindValue(originalId);
+        // 执行更新
+        if(!updateQuery.exec()) {
+            throw std::runtime_error("更新失败："+updateQuery.lastError().text().toStdString());
+        }
+        // 提交事务
+        QSqlDatabase::database().commit();
+    }
+    catch(const std::exception& e) {
+        // 回滚事务
+        QSqlDatabase::database().rollback();
+        // 恢复显示数据
+        refreshTable();
+        // 显示错误信息
+        QMessageBox::critical(this,"操作失败",QString::fromUtf8(e.what()));
+    }
+}
