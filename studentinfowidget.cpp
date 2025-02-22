@@ -13,12 +13,27 @@
 #include <QBuffer>
 #include <QMessageBox>
 #include <QSqlError>
+#include "tabledelegates.h"
 StudentInfoWidget::StudentInfoWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::StudentInfoWidget)
 {
     ui->setupUi(this);
     ui->tableWidget->verticalHeader()->setDefaultSectionSize(100);
+
+    // 性别列代理
+    ComboBoxDelegate* genderDelegate = new ComboBoxDelegate(this);
+    genderDelegate->setItems(QStringList()<<"男"<<"女");
+    ui->tableWidget->setItemDelegateForColumn(2,genderDelegate);
+    // 进度列代理
+    ComboBoxDelegate* progressDelegate = new ComboBoxDelegate(this);
+    progressDelegate->setItems(QStringList()<<"0%"<<"20%"<<"40%"<<"60%"<<"80%"<<"100%");
+    ui->tableWidget->setItemDelegateForColumn(6,progressDelegate);
+    // 日期列代理
+    ui->tableWidget->setItemDelegateForColumn(3,new DateEditDelegate(this));
+    ui->tableWidget->setItemDelegateForColumn(4,new DateEditDelegate(this));
+    // 图片列代理
+    ui->tableWidget->setItemDelegateForColumn(7,new ImageDelegate(this));
     refreshTable();
 }
 
@@ -222,4 +237,60 @@ void StudentInfoWidget::handleDialogAccepted(QGroupBox *formGroup, QGroupBox *ph
 
 }
 
+
+
+void StudentInfoWidget::on_btnDeleteItem_clicked()
+{
+    auto selected = ui->tableWidget->selectedItems();
+    if (selected.isEmpty()) {
+        QMessageBox::warning(this,"警告","请先选择要删除的单元格！");
+        return ;
+    }
+    QSqlDatabase::database().transaction();
+    foreach(QTableWidgetItem * item,selected) {
+        int row = item->row();
+        int col = item->column();
+        QString id = ui->tableWidget->item(row,0)->text();
+
+        const QStringList columns ={"id","name","gender","brithday",
+                                     "join_date","study_goal","progress","photo"};
+        QSqlQuery query;
+        query.prepare(QString("UPDATE studentInfo SET %1 = ? WHERE id = ?").arg(columns[col]));
+
+        query.addBindValue("");
+        query.addBindValue(id);
+
+        if(!query.exec()) {
+            QSqlDatabase::database().rollback();
+            QMessageBox::critical(this,"错误","更新失败："+query.lastError().text());
+            return ;
+        }
+    }
+    QSqlDatabase::database().commit();
+    refreshTable();
+}
+
+
+void StudentInfoWidget::on_btnDeleteLine_clicked()
+{
+    auto selected = ui->tableWidget->selectionModel()->selectedRows();
+    if (selected.isEmpty()) {
+        QMessageBox::warning(this,"警告","请先选择要删除的行");
+        return ;
+    }
+    QSqlDatabase::database().transaction();
+    foreach(const QModelIndex & index,selected) {
+        QString id = ui->tableWidget->item(index.row(),0)->text();
+        QSqlQuery query;
+        query.prepare("DELETE FROM studentInfo WHERE id = ?");
+        query.addBindValue(id);
+        if (!query.exec()) {
+            QSqlDatabase::database().rollback();
+            QMessageBox::critical(this,"删除","删除失败"+query.lastError().text());
+            return ;
+        }
+    }
+    QSqlDatabase::database().commit();
+    refreshTable();
+}
 

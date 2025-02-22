@@ -18,6 +18,10 @@ public:
 private slots:
     void on_btnAdd_clicked();
 
+    void on_btnDeleteItem_clicked();
+
+    void on_btnDeleteLine_clicked();
+
 private:
     QGroupBox* createFormGroup();
     QGroupBox* createPhotoGroup();
